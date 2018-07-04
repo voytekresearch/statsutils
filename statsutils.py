@@ -1,3 +1,6 @@
+import numpy as np
+from scipy import stats
+
 # z-score
 def zscore(distribution, individual):
     return (individual-np.mean(distribution))/np.std(distribution)

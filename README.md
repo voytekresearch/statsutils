@@ -1,2 +1,2 @@
 # statsutils
-Statistics helper function
+Statistics helper functions
