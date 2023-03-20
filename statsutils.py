@@ -1,91 +1,23 @@
 import numpy as np
 from scipy import stats
 
-# z-score
+
+
+
+### SUMMARY STATS ###
+# calculate z-score
 def zscore(distribution, individual):
     return (individual-np.mean(distribution))/np.std(distribution)
 
-# median absolute deviation  
-def mad(data):
-    return np.median(np.abs(data - np.median(data)))
-
-# median z-score
+# calculate median z-score
 def zscoremed(data, value):
     return np.abs(value - np.median(data))/(mad(data) * 1.4826)
 
-# p value calculations
-def p2z(pvals):
-    return abs(stats.norm.ppf(pvals/2))
+# calculate median absolute deviation  
+def mad(data):
+    return np.median(np.abs(data - np.median(data)))
 
-# arcsin sqrt transform
-def asinsqrt(data):
-    return np.arcsin(np.sqrt(data))
-
-# fisher z transform
-def fisherz(data):
-    data = np.asarray(data)
-    data[data == 1.] = 0.99
-    return 0.5 * np.log((1+data)/(1-data))
-
-# z score calculations
-def z2p(zscore):
-    return (1-stats.norm.cdf(abs(zscore)))*2
-    
-def z2r(zscore, n):
-    return np.sqrt((zscore**2)/((zscore**2)+n))
-
-def z2d(zscore, n):
-    return (2*zscore) / np.sqrt(n)
-
-# t-stat calculations
-def t2r(tstat, df):
-    return np.sqrt((tstat**2) / ((tstat**2) + df)) * np.sign(tstat)
-
-def t2d(tstat, df):
-    return (2*tstat) / np.sqrt(df)
-    
-# r value calculations
-def r2t(rval, df):
-    return np.sqrt((df * (rval**2)) / (1 - (rval**2))) * np.sign(rval)
-
-def r2d(rval):
-    return np.sqrt((4 * (rval**2)) / (1 - (rval**2)))
-    
-# Cohen's d calculations
-def d2r(cohend):
-    return np.sqrt((cohend**2) / (4 + (cohend**2)))
-
-def zdiff(z1, z2, n1, n2):
-    zdiff = z1 - z2
-
-    # Calculate sigma given the number of trials
-    se = np.sqrt((1 / (n1 - 3)) + (1 / (n2 - 3)))
-
-    # Get z-score of the differences between correlation coefficients
-    z = zdiff / se
-
-    # Calculate p-value
-    p = 1 - stats.norm.cdf(abs(z))
-
-    return z, p
- 
-def corrdiff(r1, r2, n1, n2):
-    # Fisher's z-transform to normalize correlation coefficients
-    z1 = 0.5 * np.log((1 + r1) / (1 - r1))
-    z2 = 0.5 * np.log((1 + r2) / (1 - r2))
-    zdiff = z1 - z2
-
-    # Calculate sigma given the number of trials
-    se = np.sqrt((1 / (n1 - 3)) + (1 / (n2 - 3)))
-
-    # Get z-score of the differences between correlation coefficients
-    z = zdiff / se
-
-    # Calculate p-value
-    p = 1 - stats.norm.cdf(abs(z))
-
-    return z, p
-
+# calculate d'
 def dprimen(phits, pfa, n):
     # Check for values of 1 or 0 and adjust them
     if phits == 1.:
@@ -102,6 +34,105 @@ def dprimen(phits, pfa, n):
 
     # Calculate d'
     return stats.norm.ppf(phits) - stats.norm.ppf(pfa)
+
+### SUMMARY STATS ###
+
+
+
+
+### SUMMARY STAT CONVERSIONS ###
+# convert z-score to p-value
+def z2p(zscore):
+    return (1-stats.norm.cdf(abs(zscore)))*2
+
+# convert z-score to Pearson's r
+def z2r(zscore, n):
+    return np.sqrt((zscore**2)/((zscore**2)+n))
+
+# convert z-score to Cohen's d
+def z2d(zscore, n):
+    return (2*zscore) / np.sqrt(n)
+
+# convert t-statistic to Pearson's r
+def t2r(tstat, df):
+    return np.sqrt((tstat**2) / ((tstat**2) + df)) * np.sign(tstat)
+
+# convert t-statistic to Cohen's d
+def t2d(tstat, df):
+    return (2*tstat) / np.sqrt(df)
+    
+# convert Pearson's r to t-statistic
+def r2t(rval, df):
+    return np.sqrt((df * (rval**2)) / (1 - (rval**2))) * np.sign(rval)
+
+# convert Pearson's r to Cohen's d
+def r2d(rval):
+    return np.sqrt((4 * (rval**2)) / (1 - (rval**2)))
+    
+# convert Cohen's d to Pearson's r
+def d2r(cohend):
+    return np.sqrt((cohend**2) / (4 + (cohend**2)))
+
+# convert p-value to z-score
+def p2z(pvals):
+    return abs(stats.norm.ppf(pvals/2))
+
+### SUMMARY STAT CONVERSIONS ###
+
+
+
+
+### DATA TRANSFORMS ###
+
+# arcsin sqrt transform
+def asinsqrt(data):
+    return np.arcsin(np.sqrt(data))
+
+# fisher z transform
+def fisherz(data):
+    data = np.asarray(data)
+    data[data == 1.] = 0.99
+    return 0.5 * np.log((1+data)/(1-data))
+
+### DATA TRANSFORMS ###
+
+
+
+
+### STATISTICS ###
+
+# calculate significance between two z-scores
+def zdiff(z1, z2, n1, n2):
+    zdiff = z1 - z2
+
+    # Calculate sigma given the number of trials
+    se = np.sqrt((1 / (n1 - 3)) + (1 / (n2 - 3)))
+
+    # Get z-score of the differences between correlation coefficients
+    z = zdiff / se
+
+    # Calculate p-value
+    p = 1 - stats.norm.cdf(abs(z))
+
+    return z, p
+ 
+ # calculate significance between two Pearson rs
+def corrdiff(r1, r2, n1, n2):
+    # Fisher's z-transform to normalize correlation coefficients
+    z1 = 0.5 * np.log((1 + r1) / (1 - r1))
+    z2 = 0.5 * np.log((1 + r2) / (1 - r2))
+    zdiff = z1 - z2
+
+    # Calculate sigma given the number of trials
+    se = np.sqrt((1 / (n1 - 3)) + (1 / (n2 - 3)))
+
+    # Get z-score of the differences between correlation coefficients
+    z = zdiff / se
+
+    # Calculate p-value
+    p = 1 - stats.norm.cdf(abs(z))
+
+    return z, p
 
 # reample means between two groups of data
 def resample_means(data1, data2, surrogate_runs):
@@ -133,3 +164,4 @@ def resample_means(data1, data2, surrogate_runs):
 
     return real_difference, surr_difference, exact_p_value
 
+### STATISTICS ###
